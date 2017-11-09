@@ -477,6 +477,71 @@ public class BST<K extends Comparable<K>, T> {
     }
 
 
+    /**
+     *
+     * @return array of all nodes from an inoder traversal
+     */
+    public BTNode<K,T> [] getTreeData() {
+        BTNode<K,T> [] data = new BTNode[size];
+        getTreeData(root, data, 0);
+        return data;
+    }
+
+    /**
+     * Generates an array of all nodes recursively using inorder traversal
+     * @param cur - current node
+     * @param data - data array
+     * @param index - index for next insert in array
+     * @return updated index for next insert in array
+     */
+    private  int getTreeData(BTNode<K,T> cur, BTNode<K,T> [] data, int index)
+    {
+        //Base case
+        if (cur == null) return index;
+
+        //Inorder Traversal recursion
+        index = getTreeData(cur.left, data, index);
+        data[index] = cur;
+        index++;
+        index = getTreeData(cur.right, data, index);
+
+        return index;
+    }
+
+    /**
+     * Rebalances the tree kickoff function
+     */
+    public void rebalance() {
+
+        //Get data in sorted array
+        BTNode<K,T> [] data = getTreeData();
+
+        //Reset the tree
+        root = null;
+
+        //Rebalance method
+        rebalance(data, 0, size-1);
+    }
+
+    /**
+     * Recursive method to rebalance an array of tree node data.
+     * @param data - sorted array of tree data
+     * @param first - first index of subarray
+     * @param last - last index of subarray
+     */
+    private void rebalance(BTNode<K,T> [] data, int first, int last) {
+        if (first <= last) {
+            int middle = (int) (first + last) / 2;
+            insert(data[middle].key, data[middle].info);
+            rebalance(data, first, middle - 1);
+            rebalance(data, middle+1, last);
+
+        }
+    }
+
+
+
+
     public static void main(String [] args) {
 
         Integer [] keys = {8, 6, 7, 5, 3, 0, 9, 42};
@@ -554,6 +619,20 @@ public class BST<K extends Comparable<K>, T> {
         System.out.println("\nCount Test");
         System.out.println("Size = " + tree.getSize());
         System.out.println("Size = " + tree.getCount());
+
+        System.out.println("\nData Export Test");
+        BTNode<Integer,Integer> [] data =         tree.getTreeData();
+
+        for (int i=0; i < data.length; i++ ) {
+            System.out.print(data[i].getKey() + ",");
+        }
+
+
+        System.out.println("\nRE-Balance Test:");
+        System.out.println("isBalanced = " + tree.isBalanced());
+        tree.rebalance();
+        System.out.println("isBalanced = " + tree.isBalanced());
+        tree.inOrderTraverse();
 
     }
 
